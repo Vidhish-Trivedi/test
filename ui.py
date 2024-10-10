@@ -31,14 +31,19 @@ def generate_answer(query, model, client, collection, genai, topk=2, chat_histor
 
     # Base prompt for the Gemini model
     base_prompt = """
-    Based on the following context items, please answer the query.
+    Based on the following context items, please answer the query. 
     Give yourself room to think by extracting relevant passages from the context before answering the query.
-    Don't return the thinking, only return the answer. If the context is not relevant, then answer according to yourself in Indian context."
-    Make sure your answers are as explanatory as possible.
-    \nNow use the following context items to answer the user query:
-    \nRelevant passages: {context}
-    User query: {query}\n
-    Answer in 300 words
+    Don't return the thinking, only return the answer. If the context is not relevant, then answer according to yourself in Indian context.
+    Make sure your answers are as explanatory as possible. 
+
+    If answer is not there in context then straight away give your answer instead of stating anything about context.
+
+    Now use the following context items to answer the user query:
+
+    Relevant passages: {context}
+    User query: {query}
+
+    Answer in 300 words.
     """
 
     # Concatenate retrieved text into one context block
@@ -80,10 +85,8 @@ st.markdown("</div>", unsafe_allow_html=True)
 user_input = st.text_input("Your message:", key="user_input", placeholder="Type your message here...")
 
 if st.button("Send") and user_input:
-    # Add the user's message to chat history
     st.session_state.chat_history.append({"message": user_input, "is_user": True})
 
-    # Generate the Gemini model's response with chat history
     gemini_response = generate_answer(
         query=user_input, 
         model=model, 
